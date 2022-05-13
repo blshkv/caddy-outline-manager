@@ -16,7 +16,7 @@ import (
 	"text/template"
 
 	"github.com/caddyserver/caddy/v2"
-	"github.com/caddyserver/caddy/v2/cmd"
+	caddycmd "github.com/caddyserver/caddy/v2/cmd"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 
 	"go.uber.org/zap"
@@ -54,9 +54,9 @@ var configTemplate = template.Must(template.New("").Parse(`{
                     "handle": [
                         {
                             "handler": "outline_manager",
-							"servers": ["{{ .Servers }}"],
-							"username": "{{ .Username }}",
-							"password": "{{ .RawPass }}"
+                            "servers": ["{{ .Servers }}"],
+                            "username": "{{ .Username }}",
+                            "password": "{{ .RawPass }}"
                         }
                     ]
                 }
@@ -115,9 +115,9 @@ func cmdOutlineManager(fl caddycmd.Flags) (int, error) {
 		if err := cmd.Run(); err != nil {
 			return caddy.ExitCodeFailedStartup, err
 		}
-		if err := <- errCh; err != nil {
+		if err := <-errCh; err != nil {
 			return caddy.ExitCodeFailedStartup, err
-		}	
+		}
 	}
 
 	buffer := bytes.NewBuffer(nil)
@@ -147,8 +147,8 @@ func cmdOutlineManager(fl caddycmd.Flags) (int, error) {
 // Handler implements an HTTP handler that ...
 type Handler struct {
 	Servers  []string `json:"servers"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
+	Username string   `json:"username,omitempty"`
+	Password string   `json:"password,omitempty"`
 
 	logger *zap.Logger
 	server *outline.Server
@@ -285,7 +285,7 @@ func (m *Handler) ChangeUserPass(w http.ResponseWriter, r *http.Request) error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
-	if err := <- errCh; err != nil {
+	if err := <-errCh; err != nil {
 		return err
 	}
 
